@@ -2,6 +2,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const logger = require("./middleware/logger");
 const morgan = require("morgan");
+const ErrorHandler = require("./middleware/error");
 // routes
 const course = require("./routes/course");
 const connectDB = require("./config/db");
@@ -20,6 +21,8 @@ if (process.env.NODE_ENV === "development") {
 }
 // Mount router
 app.use("/api/v1/courses", course);
+
+app.use(ErrorHandler);
 
 //connect to database
 connectDB();

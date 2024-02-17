@@ -1,3 +1,5 @@
+const ErrorResponse = require("../utils/errorResponse");
+
 const Courses = require("../models/Course");
 
 // @desc      Get all courses
@@ -13,10 +15,11 @@ exports.getcourses = async (req, res, next) => {
       data: courses,
     });
   } catch (error) {
-    console.error(error);
-    res.status(400).json({
-      success: false,
-    });
+    // console.error(error);
+    // res.status(400).json({
+    //   success: false,
+    // });
+    next(error);
   }
 };
 
@@ -27,15 +30,18 @@ exports.getcourse = async (req, res, next) => {
   try {
     const courses = await Courses.findById(req.params.id);
     if (!courses) {
-      return res.status(400).json({ success: false });
+      next(
+        new ErrorResponse(`Course Not found with the id ${req.params.id}`, 404)
+      );
     }
     res.status(200).json({ success: true, data: courses });
   } catch (error) {
-    console.error(error);
+    // console.error(error);
 
-    res.status(400).json({
-      success: false,
-    });
+    // res.status(400).json({
+    //   success: false,
+    // });
+    next(error);
   }
 };
 
@@ -51,10 +57,11 @@ exports.createcourse = async (req, res, next) => {
       data: courses,
     });
   } catch (error) {
-    console.error(error);
-    res.status(400).json({
-      success: false,
-    });
+    // console.error(error);
+    // res.status(400).json({
+    //   success: false,
+    // });
+    next(error);
   }
 };
 // @desc      Update course
@@ -68,13 +75,14 @@ exports.updatecourse = async (req, res, next) => {
     });
 
     if (!courses) {
-      return res.status(400).json({
-        success: false,
-      });
+      return next(
+        new ErrorResponse(`Course Not found with the id ${req.params.id}`, 404)
+      );
     }
     res.status(200).json({ success: true, data: courses });
   } catch (error) {
-    console.error(error);
+    // console.error(error);
+    next(error);
   }
 };
 
@@ -86,12 +94,14 @@ exports.deletecourse = async (req, res, next) => {
     const courses = await Courses.findByIdAndDelete(req.params.id);
 
     if (!courses) {
-      return res.status(400).json({
-        success: false,
-      });
+      return next(
+        new ErrorResponse(`Course Not found with the id ${req.params.id}`, 404)
+      );
     }
     res.status(200).json({ success: true, data: {} });
   } catch (error) {
-    console.error(error);
+    // console.error(error);
+
+    next(error);
   }
 };
