@@ -7,7 +7,12 @@ const {
   deletecourse,
 } = require("../controllers/courseController");
 
+const courselistingRouter = require("./courselisting");
+
 const router = express.Router();
+
+//re-router into other resource router
+router.use("/:courseId/courselisting", courselistingRouter);
 
 router.route("/").get(getcourses).post(createcourse);
 

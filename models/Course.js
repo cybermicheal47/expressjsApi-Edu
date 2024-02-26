@@ -138,4 +138,21 @@ CourseSchema.pre("save", function (next) {
 //   next();
 // });
 
+//cascade delete all the courselisting when the Courses/bootcamp is deleted
+
+CourseSchema.pre("remove", async function (next) {
+  console.log(`course removed ${this._id}`);
+  await this.model("Courselisting").deleteMany({ bootcamp: this._id });
+  next();
+});
+
+//REVERSE POPULATE WITH VIRTUALS
+
+CourseSchema.virtual("courses", {
+  ref: "Courselisting",
+  localField: "_id",
+  foreignField: "bootcamp",
+  justOne: false,
+});
+
 module.exports = mongoose.model("Course", CourseSchema);

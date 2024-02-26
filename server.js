@@ -5,6 +5,7 @@ const morgan = require("morgan");
 const ErrorHandler = require("./middleware/error");
 // routes
 const course = require("./routes/course");
+const courselisting = require("./routes/courselisting");
 const connectDB = require("./config/db");
 // load env
 dotenv.config({ path: "./config/config.env" });
@@ -21,6 +22,7 @@ if (process.env.NODE_ENV === "development") {
 }
 // Mount router
 app.use("/api/v1/courses", course);
+app.use("/api/v1/courselisting", courselisting);
 
 app.use(ErrorHandler);
 

@@ -12,7 +12,7 @@ exports.getcourses = async (req, res, next) => {
     const reqQuery = { ...req.query };
 
     //fields to exclude
-    const removeFields = ["select", "sort"];
+    const removeFields = ["select", "sort", "page", "limit"];
 
     //loop over removeFields and delete them from reqQuery
     removeFields.forEach((param) => delete reqQuery[param]);
@@ -35,7 +35,7 @@ exports.getcourses = async (req, res, next) => {
     }
 
     //finding and executing our query
-    query = Courses.find(JSON.parse(querystr));
+    query = Courses.find(JSON.parse(querystr)).populate("courses");
 
     // Select specific fields if 'select' query parameter is provided
     if (fields) {
@@ -50,11 +50,39 @@ exports.getcourses = async (req, res, next) => {
       query = query.sort("-createdAt");
     }
 
+    // Pagination
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 25;
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const total = await Courses.countDocuments();
+
+    query = query.skip(startIndex).limit(limit);
+
+    // Executing query
     const courses = await query;
+
+    // Pagination result
+    const pagination = {};
+
+    if (endIndex < total) {
+      pagination.next = {
+        page: page + 1,
+        limit,
+      };
+    }
+
+    if (startIndex > 0) {
+      pagination.prev = {
+        page: page - 1,
+        limit,
+      };
+    }
 
     res.status(200).json({
       success: true,
       count: courses.length,
+      pagination: pagination,
       data: courses,
     });
   } catch (error) {
