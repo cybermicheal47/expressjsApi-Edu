@@ -1,7 +1,9 @@
 const express = require("express");
 const dotenv = require("dotenv");
+const path = require("path");
 const logger = require("./middleware/logger");
 const morgan = require("morgan");
+const fileupload = require("express-fileupload");
 const ErrorHandler = require("./middleware/error");
 // routes
 const course = require("./routes/course");
@@ -20,6 +22,14 @@ app.use(express.json());
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
+
+//file upload
+
+app.use(fileupload());
+
+//static folder
+app.use(express.static(path.join(__dirname, "public")));
+
 // Mount router
 app.use("/api/v1/courses", course);
 app.use("/api/v1/courselisting", courselisting);

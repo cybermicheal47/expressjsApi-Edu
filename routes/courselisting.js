@@ -6,10 +6,21 @@ const {
   updateSingleCourselisted,
   deleteSingleCourselisted,
 } = require("../controllers/courselistingController");
+const Courselistingmodel = require("../models/Courselisting");
+const AdvanceResults = require("../middleware/advancedResults");
 
 const router = express.Router({ mergeParams: true });
 
-router.route("/").get(getCourselistings).post(addSingleCourselisted);
+router
+  .route("/")
+  .get(
+    AdvanceResults(Courselistingmodel, {
+      path: "bootcamp",
+      select: "name description",
+    }),
+    getCourselistings
+  )
+  .post(addSingleCourselisted);
 
 router
   .route("/:id")

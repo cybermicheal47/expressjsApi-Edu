@@ -10,30 +10,22 @@ const Course = require("../models/Course");
 
 exports.getCourselistings = async (req, res, next) => {
   try {
-    let query;
     if (req.params.courseId) {
-      query = Courselisting.find({ bootcamp: req.params.courseId }); // Assuming bootcamp is the field that stores the course ID
+      const subcourse = await Courselisting.find({
+        bootcamp: req.params.courseId,
+      }); // Assuming bootcamp is the field that stores the course ID
+
+      console.log(subcourse);
+      return res.status(200).json({
+        success: true,
+        count: subcourse.length,
+        data: subcourse,
+      });
     } else {
-      query = Courselisting.find().populate({
-        path: "bootcamp",
-        select: "name description",
-      });
+      // Use res.AdvanceResults from the middleware
+      res.status(200).json(res.AdvanceResults);
+      console.log(res.AdvanceResults);
     }
-
-    const courselisting = await query;
-
-    if (!courselisting) {
-      return res.status(404).json({
-        success: false,
-        error: "No course listings found",
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      count: courselisting.length,
-      data: courselisting,
-    });
   } catch (error) {
     console.error(error);
     res.status(500).json({
